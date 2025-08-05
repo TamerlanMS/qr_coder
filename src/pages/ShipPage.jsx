@@ -3,7 +3,7 @@ import Scanner from '../components/Scanner';
 import ConfirmModal from '../components/ConfirmModal';
 import { BarcodeFormat } from '@zxing/browser';
 
-const webhookURL = 'https://hkdk.events/wvdy4e95mpqfce';   // заменить!
+const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/ContainerKK';   // заменить!
 
 export default function ShipPage({ onBack }) {
   const [partner, setPartner]   = useState('');
