@@ -24,7 +24,7 @@ export default function ShipPage({ onBack }) {
     setSending(true);
     try {
       const payload = `${partner.split(' ')[0]},${container}`;
-      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: payload });
+      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'application/json'}, body: payload });
       alert('Контейнер успешно отгружен');
       onBack();                    // возвращаемся в меню
     } catch (e) { alert('Ошибка: '+e.message); }
