@@ -18,7 +18,7 @@ export default function ReturnPage({ onBack }) {
   const send = async () => {
     setSending(true);
     try {
-      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: `,${code}` });
+      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'application/json'}, body: `,${code}` });
       alert('Контейнер успешно списан');
       onBack();
     } catch(e){ alert('Ошибка: '+e.message); }
