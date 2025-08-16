@@ -1,0 +1,14 @@
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/api/container"
+  to     = "https://ts21.cloud1c.pro/gourme_container/hs/GourmetContainer"
+  status = 200
+  force  = true
+  [redirects.headers]
+    Access-Control-Allow-Origin  = "*"
+    Access-Control-Allow-Methods = "POST"
+    Access-Control-Allow-Headers = "Content-Type, Authoriztion"

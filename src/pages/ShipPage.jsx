@@ -1,38 +1,60 @@
 import { useState } from 'react';
 import Scanner from '../components/Scanner';
 import ConfirmModal from '../components/ConfirmModal';
+import LoadingOverlay from '../components/LoadingOverlay';
 import { BarcodeFormat } from '@zxing/browser';
 
-const webhookURL = 'https://hkdk.events/wvdy4e95mpqfce';   // заменить!
+const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/GourmetContainer'; // или '/api/container' при прокси
+
+async function sendWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: ctrl.signal });
+    const text = await res.text().catch(() => '');
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}${text ? ` — ${text}` : ''}`);
+    return { res, text };
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Таймаут запроса. Проверьте интернет/сервер.');
+    throw e;
+  } finally { clearTimeout(t); }
+}
 
 export default function ShipPage({ onBack }) {
-  const [partner, setPartner]   = useState('');
+  const [partner, setPartner]     = useState('');
   const [container, setContainer] = useState('');
-  const [ask, setAsk]           = useState(false);
-  const [sending, setSending]   = useState(false);
+  const [ask, setAsk]             = useState(false);
+  const [sending, setSending]     = useState(false);
 
-  /* ---------- сканирование ---------- */
-
-  const onPartner = txt => !partner && setPartner(txt);
-  const onContainer = txt => {
-    if (!container) { setContainer(txt); setAsk(true); }
-  };
-
-  /* ---------- отправка ---------- */
+  const onPartner = (txt) => { if (!partner) setPartner(txt); };
+  const onContainer = (txt) => { if (!container) { setContainer(txt); setAsk(true); } };
 
   const send = async () => {
     setSending(true);
     try {
-      const payload = `${partner.split(' ')[0]},${container}`;
-      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: payload });
+      const compactPartner = partner.trim().split(' ')[0]; // только код до пробела
+      const payload = {
+        partnerCode: compactPartner,
+        containerCode: container,
+      };
+      await sendWithTimeout(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
       alert('Контейнер успешно отгружен');
-      onBack();                    // возвращаемся в меню
-    } catch (e) { alert('Ошибка: '+e.message); }
-    finally { setSending(false); }
+      onBack();
+    } catch (e) {
+      alert('Ошибка отправки: ' + e.message);
+      setAsk(false);
+      setContainer('');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto">
+    <div className="p-4 max-w-lg mx-auto relative">
       <button className="underline mb-2" onClick={onBack}>← Назад</button>
       <h1 className="text-xl font-bold mb-2">Отгрузка</h1>
 
@@ -47,10 +69,7 @@ export default function ShipPage({ onBack }) {
         <>
           <p className="mb-2">Партнёр: <b>{partner}</b></p>
           <p className="mb-2">Сканируйте штрих-код контейнера</p>
-          <Scanner
-            onResult={onContainer}
-            formats={[BarcodeFormat.EAN_13]}   // ← только “товарный” код
-          />
+          <Scanner onResult={onContainer} formats={[BarcodeFormat.EAN_13]} />
         </>
       )}
 
@@ -62,7 +81,7 @@ export default function ShipPage({ onBack }) {
         onNo={() => { setAsk(false); setContainer(''); }}
       />
 
-      {sending && <p className="mt-4">Отправка…</p>}
+      <LoadingOverlay open={sending} text="Отправка данных…" />
     </div>
   );
 }
