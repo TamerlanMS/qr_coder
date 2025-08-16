@@ -4,21 +4,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { BarcodeFormat } from '@zxing/browser';
 
-const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/GourmetContainer'; // или '/api/container' при прокси
-
-async function sendWithTimeout(url, options = {}, timeoutMs = 10000) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { ...options, signal: ctrl.signal });
-    const text = await res.text().catch(() => '');
-    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}${text ? ` — ${text}` : ''}`);
-    return { res, text };
-  } catch (e) {
-    if (e.name === 'AbortError') throw new Error('Таймаут запроса. Проверьте интернет/сервер.');
-    throw e;
-  } finally { clearTimeout(t); }
-}
+const webhookURL = 'https://hkdk.events/wvdy4e95mpqfce';   // заменить!
 
 export default function ShipPage({ onBack }) {
   const [partner, setPartner]     = useState('');
@@ -32,16 +18,8 @@ export default function ShipPage({ onBack }) {
   const send = async () => {
     setSending(true);
     try {
-      const compactPartner = partner.trim().split(' ')[0]; // только код до пробела
-      const payload = {
-        partnerCode: compactPartner,
-        containerCode: container,
-      };
-      await sendWithTimeout(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const payload = `${partner.split(' ')[0]},${container}`;
+      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: payload });
       alert('Контейнер успешно отгружен');
       onBack();
     } catch (e) {

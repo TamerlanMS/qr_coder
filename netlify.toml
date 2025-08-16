@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [[redirects]]
   from = "/*"
   to   = "/index.html"
@@ -12,3 +13,15 @@
     Access-Control-Allow-Origin  = "*"
     Access-Control-Allow-Methods = "POST"
     Access-Control-Allow-Headers = "Content-Type, Authoriztion"
+=======
+[[redirects]]
+  from   = "/webhook"
+  to     = "https://ts21.cloud1c.pro/gourme_container/hs/ContainerKK"
+  status = 200          # proxy
+  force  = true
+
+  [redirects.headers]
+    Access-Control-Allow-Origin = "https://qrcoderkenkost.netlify.app/"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+>>>>>>> ccb78b292debe38689c373fcf0ff29cc43c2bbe0
