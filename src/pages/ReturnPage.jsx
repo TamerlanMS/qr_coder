@@ -4,8 +4,8 @@ import ConfirmModal from '../components/ConfirmModal';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { BarcodeFormat } from '@zxing/browser';
 
-<<<<<<< HEAD
-const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/GourmetContainer'; // или '/api/container' при прокси
+//const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/GourmetContainer'; // или '/api/container' при прокси
+const webhookURL = '/api/container';
 
 async function sendWithTimeout(url, options = {}, timeoutMs = 10000) {
   const ctrl = new AbortController();
@@ -20,9 +20,6 @@ async function sendWithTimeout(url, options = {}, timeoutMs = 10000) {
     throw e;
   } finally { clearTimeout(t); }
 }
-=======
-const webhookURL = 'https://ts21.cloud1c.pro/gourme_container/hs/ContainerKK';
->>>>>>> ccb78b292debe38689c373fcf0ff29cc43c2bbe0
 
 export default function ReturnPage({ onBack }) {
   const [code, setCode]       = useState('');
@@ -37,7 +34,6 @@ export default function ReturnPage({ onBack }) {
   const send = async () => {
     setSending(true);
     try {
-<<<<<<< HEAD
       const payload = {
         partnerCode: '',       // по ТЗ при возврате пусто
         containerCode: code,   // номер контейнера как есть
@@ -47,9 +43,6 @@ export default function ReturnPage({ onBack }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-=======
-      await fetch(webhookURL, { method:'POST', headers:{'Content-Type':'application/json'}, body: `,${code}` });
->>>>>>> ccb78b292debe38689c373fcf0ff29cc43c2bbe0
       alert('Контейнер успешно списан');
       onBack();
     } catch (e) {
